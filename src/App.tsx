@@ -25,6 +25,7 @@ const App = () => (
       <NavigationContainer>
         <AuthProvider>
           <Stack.Navigator 
+            id={undefined}
             initialRouteName="Index"
             screenOptions={{
               headerShown: false,
