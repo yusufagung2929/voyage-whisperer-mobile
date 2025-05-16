@@ -1,8 +1,8 @@
 
 import { ReactNode, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "@/contexts/AuthContext";
-import { Loader2 } from "lucide-react";
+import { View, ActivityIndicator } from "react-native";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -10,19 +10,19 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { user, isLoading } = useAuth();
-  const navigate = useNavigate();
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (!isLoading && !user) {
-      navigate("/login");
+      navigation.navigate("Login" as never);
     }
-  }, [user, isLoading, navigate]);
+  }, [user, isLoading, navigation]);
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" color="#3B82F6" />
+      </View>
     );
   }
 
