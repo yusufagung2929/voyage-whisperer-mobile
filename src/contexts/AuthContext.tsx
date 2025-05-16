@@ -1,7 +1,6 @@
 
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "@/components/ui/use-toast";
+import { Alert } from "react-native";
 
 interface User {
   id: string;
@@ -19,21 +18,17 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({ children, navigation }: { children: ReactNode, navigation?: any }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const navigate = useNavigate();
   
   // Check for existing session on app load
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        const storedUser = localStorage.getItem("user");
-        const token = localStorage.getItem("token");
-        
-        if (storedUser && token) {
-          setUser(JSON.parse(storedUser));
-        }
+        // In mobile, we'd use AsyncStorage
+        // For this example, we'll simulate the check
+        setUser(null);
       } catch (error) {
         console.error("Authentication check failed:", error);
       } finally {
@@ -56,21 +51,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         token: "mock-jwt-token"
       };
       
-      localStorage.setItem("token", mockResponse.token);
-      localStorage.setItem("user", JSON.stringify(mockResponse.user));
+      // In mobile, we'd use AsyncStorage instead of localStorage
+      // For demo, we just set the state
       setUser(mockResponse.user);
-      toast({
-        title: "Login Successful",
-        description: "Welcome back!",
-      });
-      navigate("/trips");
+      Alert.alert("Success", "Login successful");
     } catch (error) {
       console.error("Login failed:", error);
-      toast({
-        title: "Login Failed",
-        description: "Please check your credentials and try again.",
-        variant: "destructive"
-      });
+      Alert.alert("Error", "Login failed. Please check your credentials.");
     } finally {
       setIsLoading(false);
     }
@@ -88,35 +75,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         token: "mock-jwt-token"
       };
       
-      localStorage.setItem("token", mockResponse.token);
-      localStorage.setItem("user", JSON.stringify(mockResponse.user));
+      // In mobile, we'd use AsyncStorage instead of localStorage
+      // For demo, we just set the state
       setUser(mockResponse.user);
-      toast({
-        title: "Registration Successful",
-        description: "Your account has been created!",
-      });
-      navigate("/trips");
+      Alert.alert("Success", "Registration successful");
     } catch (error) {
       console.error("Registration failed:", error);
-      toast({
-        title: "Registration Failed",
-        description: "Please check your information and try again.",
-        variant: "destructive"
-      });
+      Alert.alert("Error", "Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    // In mobile, we'd use AsyncStorage.removeItem
+    // For demo, we just set the state
     setUser(null);
-    navigate("/login");
-    toast({
-      title: "Logged Out",
-      description: "You've been successfully logged out.",
-    });
+    Alert.alert("Success", "Logged out successfully");
   };
 
   return (

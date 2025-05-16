@@ -1,93 +1,193 @@
 
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import React, { useEffect } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "@/contexts/AuthContext";
 
-const Index = () => {
+const Index = ({ navigation }) => {
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
     // If user is already logged in, redirect to trips
     if (user) {
-      navigate("/trips");
+      navigation.navigate("Trips");
     }
-  }, [user, navigate]);
+  }, [user, navigation]);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <SafeAreaView style={styles.container}>
       {/* Hero section */}
-      <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-24 h-24 mb-6 bg-blue-600 rounded-full flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-            <path d="M2 17l10 5 10-5"></path>
-            <path d="M2 12l10 5 10-5"></path>
-          </svg>
-        </div>
-        <h1 className="text-4xl font-bold mb-2 text-gray-800">TripPlanner AI</h1>
-        <p className="text-xl text-gray-600 mb-8">
+      <View style={styles.heroSection}>
+        <View style={styles.logoContainer}>
+          <Text style={styles.logoText}>TP</Text>
+        </View>
+        <Text style={styles.title}>TripPlanner AI</Text>
+        <Text style={styles.subtitle}>
           Create personalized trip itineraries with AI assistance
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Button 
-            size="lg" 
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8"
-            onClick={() => navigate("/login")}
+        </Text>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={() => navigation.navigate("Login")}
           >
-            Login
-          </Button>
-          <Button 
-            size="lg" 
-            variant="outline" 
-            className="border-blue-600 text-blue-600 hover:bg-blue-50 px-8"
-            onClick={() => navigate("/register")}
+            <Text style={styles.loginButtonText}>Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.registerButton}
+            onPress={() => navigation.navigate("Register")}
           >
-            Register
-          </Button>
-        </div>
-      </div>
+            <Text style={styles.registerButtonText}>Register</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
       {/* Features section */}
-      <div className="bg-gray-50 py-16 px-6">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold mb-8 text-center text-gray-800">
-            Plan Your Perfect Trip with AI
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium mb-2 text-gray-800">Time-Saving Planning</h3>
-              <p className="text-gray-600">Generate complete itineraries in seconds with our AI assistant</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium mb-2 text-gray-800">Step-by-Step Timeline</h3>
-              <p className="text-gray-600">Visualize your trip planning process with our intuitive timeline interface</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium mb-2 text-gray-800">Smart Suggestions</h3>
-              <p className="text-gray-600">Receive real-time recommendations based on your preferences and budget</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      <View style={styles.featuresSection}>
+        <Text style={styles.featuresTitle}>
+          Plan Your Perfect Trip with AI
+        </Text>
+        <View style={styles.featuresGrid}>
+          <View style={styles.featureCard}>
+            <View style={styles.featureIconContainer}>
+              <Text style={styles.featureIcon}>⏱️</Text>
+            </View>
+            <Text style={styles.featureTitle}>Time-Saving Planning</Text>
+            <Text style={styles.featureDescription}>
+              Generate complete itineraries in seconds with our AI assistant
+            </Text>
+          </View>
+          <View style={styles.featureCard}>
+            <View style={styles.featureIconContainer}>
+              <Text style={styles.featureIcon}>📋</Text>
+            </View>
+            <Text style={styles.featureTitle}>Step-by-Step Timeline</Text>
+            <Text style={styles.featureDescription}>
+              Visualize your trip planning process with our intuitive timeline interface
+            </Text>
+          </View>
+          <View style={styles.featureCard}>
+            <View style={styles.featureIconContainer}>
+              <Text style={styles.featureIcon}>💡</Text>
+            </View>
+            <Text style={styles.featureTitle}>Smart Suggestions</Text>
+            <Text style={styles.featureDescription}>
+              Receive real-time recommendations based on your preferences and budget
+            </Text>
+          </View>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#F9FAFB"
+  },
+  heroSection: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24
+  },
+  logoContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "#3B82F6",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 24
+  },
+  logoText: {
+    color: "white",
+    fontSize: 24,
+    fontWeight: "bold"
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginBottom: 8,
+    color: "#1F2937"
+  },
+  subtitle: {
+    fontSize: 18,
+    marginBottom: 32,
+    color: "#4B5563",
+    textAlign: "center"
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    gap: 16
+  },
+  loginButton: {
+    backgroundColor: "#3B82F6",
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 8
+  },
+  loginButtonText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 16
+  },
+  registerButton: {
+    borderColor: "#3B82F6",
+    borderWidth: 1,
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 8
+  },
+  registerButtonText: {
+    color: "#3B82F6",
+    fontWeight: "600",
+    fontSize: 16
+  },
+  featuresSection: {
+    padding: 24,
+    backgroundColor: "#F1F5F9"
+  },
+  featuresTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 24,
+    textAlign: "center",
+    color: "#1F2937"
+  },
+  featuresGrid: {
+    gap: 16
+  },
+  featureCard: {
+    backgroundColor: "white",
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 16,
+    borderColor: "#E5E7EB",
+    borderWidth: 1
+  },
+  featureIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "#DBEAFE",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16
+  },
+  featureIcon: {
+    fontSize: 24
+  },
+  featureTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 8,
+    color: "#1F2937"
+  },
+  featureDescription: {
+    fontSize: 14,
+    color: "#4B5563"
+  }
+});
 
 export default Index;

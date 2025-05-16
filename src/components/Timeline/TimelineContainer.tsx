@@ -1,5 +1,6 @@
 
-import { ReactNode } from "react";
+import React, { ReactNode } from 'react';
+import { View, StyleSheet } from 'react-native';
 
 interface TimelineContainerProps {
   children: ReactNode;
@@ -7,10 +8,16 @@ interface TimelineContainerProps {
 
 const TimelineContainer = ({ children }: TimelineContainerProps) => {
   return (
-    <div className="py-4 px-2 md:px-4">
+    <View style={styles.container}>
       {children}
-    </div>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 16
+  }
+});
 
 export default TimelineContainer;

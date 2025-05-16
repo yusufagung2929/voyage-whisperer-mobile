@@ -1,10 +1,14 @@
 
+import React from 'react';
+import { Text } from 'react-native';
+
 interface CurrencyProps {
   amount: number;
   currency?: string;
+  style?: any;
 }
 
-const Currency = ({ amount, currency = "IDR" }: CurrencyProps) => {
+const Currency = ({ amount, currency = "IDR", style = {} }: CurrencyProps) => {
   const formatted = new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency,
@@ -12,7 +16,7 @@ const Currency = ({ amount, currency = "IDR" }: CurrencyProps) => {
     maximumFractionDigits: 0,
   }).format(amount);
 
-  return <span>{formatted}</span>;
+  return <Text style={style}>{formatted}</Text>;
 };
 
 export default Currency;

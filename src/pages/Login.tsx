@@ -1,141 +1,244 @@
 
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import React, { useState } from "react";
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet, 
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView 
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "@/contexts/AuthContext";
-import { Loader2 } from "lucide-react";
 
-const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-});
-
-const Login = () => {
+const Login = ({ navigation }) => {
   const { login, isLoading } = useAuth();
-  const navigate = useNavigate();
-  const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
+  const validateForm = () => {
+    let isValid = true;
+    
+    // Email validation
+    if (!email) {
+      setEmailError("Email is required");
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError("Please enter a valid email address");
+      isValid = false;
+    } else {
+      setEmailError("");
+    }
+    
+    // Password validation
+    if (!password) {
+      setPasswordError("Password is required");
+      isValid = false;
+    } else if (password.length < 6) {
+      setPasswordError("Password must be at least 6 characters");
+      isValid = false;
+    } else {
+      setPasswordError("");
+    }
+    
+    return isValid;
+  };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setError(null);
-    try {
-      await login(values.email, values.password);
-    } catch (err) {
-      setError("Login failed. Please check your credentials and try again.");
+  const handleSubmit = async () => {
+    if (validateForm()) {
+      try {
+        await login(email, password);
+        // Navigation will be handled in the AuthContext
+      } catch (err) {
+        Alert.alert("Login Failed", "Please check your credentials and try again.");
+      }
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
-      <div className="w-full max-w-md">
-        <div className="flex justify-center mb-8">
-          <div className="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-              <path d="M2 17l10 5 10-5"></path>
-              <path d="M2 12l10 5 10-5"></path>
-            </svg>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">Welcome Back</h1>
-            <p className="text-gray-600">Log in to your account</p>
-          </div>
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoid}
+      >
+        <ScrollView contentContainerStyle={styles.scrollView}>
+          <View style={styles.logoContainer}>
+            <View style={styles.logo}>
+              <Text style={styles.logoText}>TP</Text>
+            </View>
+          </View>
+          
+          <View style={styles.formContainer}>
+            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.subtitle}>Log in to your account</Text>
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
-              {error}
-            </div>
-          )}
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="you@example.com" 
-                        type="email" 
-                        {...field} 
-                        className="border-gray-300"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={[styles.input, emailError ? styles.inputError : null]}
+                placeholder="you@example.com"
+                placeholderTextColor="#9CA3AF"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
               />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="••••••••" 
-                        type="password" 
-                        {...field} 
-                        className="border-gray-300"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button 
-                type="submit" 
-                className="w-full bg-blue-600 hover:bg-blue-700" 
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Logging in...
-                  </>
-                ) : (
-                  "Log In"
-                )}
-              </Button>
-            </form>
-          </Form>
+              {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+            </View>
 
-          <div className="mt-6 text-center text-sm">
-            <p className="text-gray-600">
-              Don't have an account?{" "}
-              <Link to="/register" className="text-blue-600 hover:underline">
-                Register
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Password</Text>
+              <TextInput
+                style={[styles.input, passwordError ? styles.inputError : null]}
+                placeholder="••••••••"
+                placeholderTextColor="#9CA3AF"
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+              />
+              {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+            </View>
+
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleSubmit}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <Text style={styles.buttonText}>Log In</Text>
+              )}
+            </TouchableOpacity>
+
+            <View style={styles.registerLink}>
+              <Text style={styles.registerText}>
+                Don't have an account?{" "}
+              </Text>
+              <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+                <Text style={styles.registerLinkText}>Register</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#F9FAFB"
+  },
+  keyboardAvoid: {
+    flex: 1
+  },
+  scrollView: {
+    flexGrow: 1,
+    justifyContent: "center",
+    padding: 16
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: 32
+  },
+  logo: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: "#3B82F6",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  logoText: {
+    color: "white",
+    fontSize: 24,
+    fontWeight: "bold"
+  },
+  formContainer: {
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 15,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: "#F1F1F1"
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#1F2937",
+    marginBottom: 4
+  },
+  subtitle: {
+    fontSize: 16,
+    textAlign: "center",
+    color: "#6B7280",
+    marginBottom: 24
+  },
+  formGroup: {
+    marginBottom: 16
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "500",
+    marginBottom: 8,
+    color: "#1F2937"
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: "white",
+    color: "#1F2937"
+  },
+  inputError: {
+    borderColor: "#EF4444"
+  },
+  errorText: {
+    color: "#EF4444",
+    fontSize: 14,
+    marginTop: 4
+  },
+  button: {
+    backgroundColor: "#3B82F6",
+    padding: 16,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 8
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 16
+  },
+  registerLink: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 24
+  },
+  registerText: {
+    color: "#6B7280",
+    fontSize: 14
+  },
+  registerLinkText: {
+    color: "#3B82F6",
+    fontWeight: "500",
+    fontSize: 14
+  }
+});
 
 export default Login;
